@@ -14,19 +14,21 @@ const PORT = process.env.PORT || 3001;
 const server = http.createServer(app);
 const io = socketIo(server);
 
-// Initialize socket connections
-socketService.initSocket(io);
-
 const start = (port = PORT, callback) => {
   server.listen(port, () => {
+    socketService.initSocket(io);
     console.log(`Application running successfully on port: ${port}`);
-    if (callback) callback(); // Signals readiness for Jest tests
+    if (callback) callback(); 
   });
 };
 
 const stop = (callback) => {
-  server.close(callback); // Closes the server and releases the port
+  server.close(callback);
 };
+
+if (require.main === module) {
+  start();
+}
 
 module.exports = {
   start,

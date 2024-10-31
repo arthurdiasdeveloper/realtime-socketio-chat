@@ -17,7 +17,6 @@ describe("Socket Integration Tests", () => {
   beforeEach((done) => {
     socket = ioClient(`http://localhost:${PORT}`);
     socket.on("connect", () => {
-      console.log("Connected to server!");
       socket.emit("getUser", { user: { name: "user1", socketId: socket.id } });
       done();
     });
@@ -38,29 +37,41 @@ describe("Socket Integration Tests", () => {
   });
 
   test("it should add many users", (done) => {
-    const totalUsers = 10;
-    let connectedUsers = 0;
+    const usersToConnect = [
+      { name: "user2", socketId: "socketId2" },
+      { name: "user3", socketId: "socketId3" },
+      { name: "user4", socketId: "socketId4" },
+    ];
+    const sockets = [];
+    let connectedUsersCount = 0;
 
-    Array.from({ length: totalUsers }, (_, index) => {
+    usersToConnect.forEach((user) => {
       const socket = ioClient(`http://localhost:${PORT}`);
 
       socket.on("connect", () => {
-        console.log("Connected to server!");
-        socket.emit("getUser", {
-          user: { name: `user${index + 1}`, socketId: socket.id },
-        });
+        socket.emit("getUser", { user });
+        connectedUsersCount += 1;
 
-        connectedUsers += 1;
-
-        if (connectedUsers === totalUsers) {
+        if (connectedUsersCount === usersToConnect.length) {
           socket.emit("listUsers");
         }
       });
 
       socket.on("listUsers", (users) => {
-        console.log("no teste", users);
 
+        const userExists = users.some((u) => u.name === user.name);
+        expect(userExists).toBe(true);
+        sockets.forEach((s) => s.disconnect());
         done();
+      });
+
+      sockets.push(socket);
+    });
+
+    sockets.forEach((socket) => {
+      socket.on("error", (err) => {
+        console.error("Socket error:", err);
+        done(err);
       });
     });
   });
@@ -86,7 +97,6 @@ describe("Socket Integration Tests", () => {
     });
     socket.emit("listMessages", "test");
     socket.on("messageList", (messages) => {
-      console.log("aquiiii", messages);
       done();
     });
   });
