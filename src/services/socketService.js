@@ -6,8 +6,8 @@ const addUser = (socket, socketId) => {
     const userExists = users.some((u) => u.name === user.name);
     if (!userExists) {
       users.push({ ...user, socketId });
+      console.log(`User ${user.name} connected with socketId: ${socketId}`);
     }
-    console.log(`User ${user.name} connected with socketId: ${socketId}`);
     socket.emit("getUser", { user });
   });
 };
@@ -16,6 +16,11 @@ const listUsers = (socket) => {
   socket.on("listUsers", () => {
     socket.emit("listUsers", users);
   });
+};
+
+const removeUser = (socketId) => {
+  const index = users.findIndex((user) => user.socketId === socketId);
+  if (index !== -1) users.splice(index, 1);
 };
 
 const createDefaultRooms = () => {
@@ -28,17 +33,11 @@ const createDefaultRooms = () => {
     "Outros",
   ];
   defaultRoomNames.forEach((roomName) => {
-    const roomExists = rooms.some((room) => room.name === roomName);
-    if (!roomExists) {
+    if (!rooms.some((room) => room.name === roomName)) {
       rooms.push({ name: roomName, messages: [], members: [] });
       console.log(`Created room: ${roomName}`);
     }
   });
-};
-
-const removeUser = (socketId) => {
-  const index = users.findIndex((user) => user.socketId === socketId);
-  if (index !== -1) users.splice(index, 1);
 };
 
 const joinRoom = (socket, roomName) => {
@@ -47,16 +46,31 @@ const joinRoom = (socket, roomName) => {
   if (room && !room.members.includes(socket.id)) {
     room.members.push(socket.id);
     console.log(`User ${socket.id} joined room: ${roomName}`);
+  } else {
+    console.log(`Room ${roomName} not found`);
   }
 };
 
-const handleChatMessage = (socket, io) => {
-  socket.on("chat", (id, chat, roomName) => {
+const showRooms = (socket, io) => {
+  socket.on("showRooms", () => {
+    io.emit("showRooms", rooms);
+  });
+};
+
+const showSpecificRoom = (socket, io) => {
+  socket.on("showSpecificRoom", (roomName) => {
     const room = rooms.find((room) => room.name === roomName);
-    const message = { userId: id, message: chat, socketId: socket.id };
+    io.emit("showSpecificRoom", room);
+  });
+};
+
+const handleChatMessage = (socket, io) => {
+  socket.on("chat", (chat, roomName) => {
+    const room = rooms.find((room) => room.name === roomName);
     if (room) {
+      const message = { message: chat, socketId: socket.id };
       room.messages.push(message);
-      io.to(roomName).emit("sendChat", id, chat, socket.id);
+      io.to(roomName).emit("sendChat", chat, socket.id);
     }
   });
 };
@@ -64,8 +78,7 @@ const handleChatMessage = (socket, io) => {
 const handleListMessages = (socket) => {
   socket.on("listMessages", (roomName) => {
     const room = rooms.find((room) => room.name === roomName);
-    const roomMessages = room ? room.messages : [];
-    socket.emit("messageList", roomMessages);
+    socket.emit("messageList", room ? room.messages : []);
   });
 };
 
@@ -83,28 +96,22 @@ const handleDisconnect = (socket, io) => {
   });
 };
 
-const showRooms = (socket, io) => {
-  socket.on("showRooms", () => {
-    io.emit("showRooms", rooms);
-  });
-};
-
 const initSocket = (io) => {
   createDefaultRooms();
 
   io.on("connection", (socket) => {
     addUser(socket, socket.id);
-
-    socket.on("joinRoom", (room) => {
-      joinRoom(socket, room);
-    });
-
     listUsers(socket);
     handleChatMessage(socket, io);
     handleListMessages(socket);
     handleUsernameChange(socket);
     handleDisconnect(socket, io);
     showRooms(socket, io);
+
+    socket.on("joinRoom", (roomName) => joinRoom(socket, roomName));
+    socket.on("showSpecificRoom", (roomName) =>
+      showSpecificRoom(socket, io, roomName)
+    );
   });
 };
 

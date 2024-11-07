@@ -18,7 +18,7 @@ const start = (port = PORT, callback) => {
   server.listen(port, () => {
     socketService.initSocket(io);
     console.log(`Application running successfully on port: ${port}`);
-    if (callback) callback(); 
+    if (callback) callback();
   });
 };
 

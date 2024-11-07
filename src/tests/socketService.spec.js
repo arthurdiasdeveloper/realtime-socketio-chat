@@ -35,7 +35,6 @@ describe("Socket Integration Tests", () => {
       done();
     });
   });
-
   test("it should add many users", (done) => {
     const usersToConnect = [
       { name: "user2", socketId: "socketId2" },
@@ -58,7 +57,6 @@ describe("Socket Integration Tests", () => {
       });
 
       socket.on("listUsers", (users) => {
-
         const userExists = users.some((u) => u.name === user.name);
         expect(userExists).toBe(true);
         sockets.forEach((s) => s.disconnect());
@@ -75,8 +73,7 @@ describe("Socket Integration Tests", () => {
       });
     });
   });
-
-  test.skip("it should list default rooms", (done) => {
+  test("it should list default rooms", (done) => {
     socket.emit("showRooms");
     socket.on("showRooms", (rooms) => {
       expect(rooms).toEqual([
@@ -90,14 +87,61 @@ describe("Socket Integration Tests", () => {
       done();
     });
   });
-  test.skip("it should send a 5 messages to a room", (done) => {
-    Array.from({ length: 5 }).forEach((__, index) => {
-      const message = `Message number ${index + 1}`;
-      socket.emit("chat", "test", message);
-    });
-    socket.emit("listMessages", "test");
-    socket.on("messageList", (messages) => {
+  test("it should join room and send message", (done) => {
+    socket.emit("joinRoom", "Agronegócio Global");
+    socket.on("joinRoom", (room) => {
+      expect(room).toEqual("Agronegócio Global");
       done();
+    });
+    let user = {};
+    socket.emit("listUsers");
+    socket.on("listUsers", (users) => {
+      user = users[0];
+    });
+    socket.emit("chat", "hello", "Agronegócio Global");
+    socket.emit("showRooms");
+    socket.on("showRooms", (rooms) => {
+      const result = rooms.find((room) => room.name === "Agronegócio Global");
+      expect(result).toEqual({
+        name: "Agronegócio Global",
+        messages: [{ message: "hello", socketId: user.socketId }],
+        members: [user.socketId],
+      });
+      done();
+    });
+  });
+  test("It should verify if a message sent by one user was received by another user", (done) => {
+    const senderSocket = ioClient(`http://localhost:${PORT}`);
+    const receiverSocket = ioClient(`http://localhost:${PORT}`);
+
+    const roomName = "Agronegócio Global";
+    const messageToSend = "Hello from sender!";
+
+    receiverSocket.on("sendChat", (receivedMessage, senderSocketId) => {
+      try {
+        console.log("Message received:", receivedMessage);
+        expect(receivedMessage).toBe(messageToSend);
+        expect(senderSocketId).toBe(senderSocket.id); 
+        done(); 
+      } finally {
+        senderSocket.disconnect();
+        receiverSocket.disconnect();
+      }
+    });
+
+    senderSocket.on("connect", () => {
+      senderSocket.emit("getUser", {
+        user: { name: "user1", socketId: senderSocket.id },
+      });
+      senderSocket.emit("joinRoom", roomName);
+      senderSocket.emit("chat", messageToSend, roomName);
+    });
+
+    receiverSocket.on("connect", () => {
+      receiverSocket.emit("getUser", {
+        user: { name: "receiver", socketId: receiverSocket.id },
+      });
+      receiverSocket.emit("joinRoom", roomName);
     });
   });
 });
