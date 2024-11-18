@@ -2,6 +2,36 @@
 
 <p>Welcome to the Real-Time Chat Application built with <strong>Socket.IO</strong> and <strong>JavaScript</strong>! This project demonstrates the power of real-time communication in web applications, allowing users to engage in instant messaging seamlessly.</p>
 
+<h1>Passo a passo para rodar o docker</h1>
+
+# Instruções para Executar o Projeto com Docker
+
+<p>Este documento fornece um guia passo a passo sobre como baixar, configurar e executar o projeto utilizando Docker.</p>
+
+## Pré-requisitos
+
+<p>Antes de começar, você precisará ter o Docker e o Docker Compose instalados em sua máquina. Você pode baixar e instalar o Docker a partir do seguinte link:</p>
+
+<p><a href="https://www.docker.com/get-started">Baixar Docker</a></p>
+
+## Passo 1: Baixar o Projeto
+
+<p>Clone o repositório do projeto para sua máquina local utilizando o seguinte comando:</p>
+
+<p>```bash </p>
+<p> git clone git@github.com:arthurdiasdeveloper/realtime-socketio-chat.git </p>
+
+<p>Entre no diretório do projeto:</p>
+
+<p>cd realtime-socketio-chat</p>
+
+<p>Para construir e iniciar os containers do Docker, execute o seguinte comando:</p>
+
+<p>docker-compose up --build</p>
+
+<p>Caso queira parar o projeto digite o comando: docker-compose down</p>
+
+
 <h2>Features</h2>
 <ul>
     <li><strong>Real-Time Messaging</strong>: Send and receive messages instantly with Socket.IO.</li>
