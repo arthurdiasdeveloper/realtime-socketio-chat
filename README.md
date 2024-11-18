@@ -2,35 +2,35 @@
 
 <p>Welcome to the Real-Time Chat Application built with <strong>Socket.IO</strong> and <strong>JavaScript</strong>! This project demonstrates the power of real-time communication in web applications, allowing users to engage in instant messaging seamlessly.</p>
 
-<h1>Passo a passo para rodar o docker</h1>
+<h1>Step-by-Step Guide to Running with Docker</h1>
 
-# Instruções para Executar o Projeto com Docker
+<p>This document provides a step-by-step guide on how to download, configure, and run the project using Docker.</p>
 
-<p>Este documento fornece um guia passo a passo sobre como baixar, configurar e executar o projeto utilizando Docker.</p>
+<h2>Prerequisites</h2>
 
-## Pré-requisitos
+<p>Before you begin, you will need to have Docker and Docker Compose installed on your machine. You can download and install Docker from the following link:</p>
 
-<p>Antes de começar, você precisará ter o Docker e o Docker Compose instalados em sua máquina. Você pode baixar e instalar o Docker a partir do seguinte link:</p>
+<p><a href="https://www.docker.com/get-started">Download Docker</a></p>
 
-<p><a href="https://www.docker.com/get-started">Baixar Docker</a></p>
+<h2>Step 1: Download the Project</h2>
 
-## Passo 1: Baixar o Projeto
+<p>Clone the project repository to your local machine using the following command:</p>
 
-<p>Clone o repositório do projeto para sua máquina local utilizando o seguinte comando:</p>
+<pre><code>git clone git@github.com:arthurdiasdeveloper/realtime-socketio-chat.git</code></pre>
 
-<p>```bash </p>
-<p> git clone git@github.com:arthurdiasdeveloper/realtime-socketio-chat.git </p>
+<p>Navigate to the project directory:</p>
 
-<p>Entre no diretório do projeto:</p>
+<pre><code>cd realtime-socketio-chat</code></pre>
 
-<p>cd realtime-socketio-chat</p>
+<h2>Step 2: Build and Run the Docker Containers</h2>
 
-<p>Para construir e iniciar os containers do Docker, execute o seguinte comando:</p>
+<p>To build and start the Docker containers, run the following command:</p>
 
-<p>docker-compose up --build</p>
+<pre><code>docker-compose up --build</code></pre>
 
-<p>Caso queira parar o projeto digite o comando: docker-compose down</p>
+<p>If you want to stop the project, type the following command:</p>
 
+<pre><code>docker-compose down</code></pre>
 
 <h2>Features</h2>
 <ul>
@@ -51,7 +51,7 @@
 <h3>Installation</h3>
 <ol>
     <li>Clone the repository:
-        <pre><code>git clone https://github.com/aristeu-garcia/realtime-socketio-chat.git</code></pre>
+        <pre><code>git clone https://github.com/arthurdiasdeveloper/realtime-socketio-chat.git</code></pre>
     </li>
     <li>Navigate to the project directory:
         <pre><code>cd realtime-socketio-chat</code></pre>
@@ -64,7 +64,7 @@
 <h3>Running the Application</h3>
 <p>To start the application, run the following command:</p>
 <pre><code>npm start</code></pre>
-<p>Follow your terminal <code>http://localhost:3000</code> to access the logs of application.</p>
+<p>Follow your terminal to <code>http://localhost:3000</code> to access the application logs.</p>
 
 <h2>Running Tests</h2>
 <p>To execute the integration tests, run:</p>
@@ -86,7 +86,6 @@
     <li>Push to the branch (<code>git push origin feature/AmazingFeature</code>)</li>
     <li>Open a Pull Request</li>
 </ol>
-
 
 <h2>Acknowledgments</h2>
 <ul>
