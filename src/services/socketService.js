@@ -1,7 +1,5 @@
 const User = require('../models/User');
-
-
-
+const Message = require('../models/Message');
 const users = [];
 const rooms = [];
 
@@ -16,6 +14,19 @@ const addUser  = async (socket, socketId) => {
        }
        socket.emit("getUser ", { user });
    });
+};
+//primeira vez
+const handleChatMessage = async (socket, io) => {
+    socket.on("chat", async (chat, roomName) => {
+        const room = rooms.find((room) => room.name === roomName);
+        if (room) {
+            // Cria uma nova mensagem e a salva no banco de dados
+            const message = new Message({ room: roomName, message: chat, socketId: socket.id });
+            await message.save(); // Salva a mensagem no MongoDB
+            room.messages.push(message);
+            io.to(roomName).emit("sendChat", chat, socket.id);
+        }
+    });
 };
 
 const listUsers = (socket) => {
@@ -70,6 +81,8 @@ const showSpecificRoom = (socket, io) => {
    });
 };
 
+//Versão do Aristeu.
+/* 
 const handleChatMessage = async (socket, io) => {
    socket.on("chat", async (chat, roomName) => {
        const room = rooms.find((room) => room.name === roomName);
@@ -80,7 +93,7 @@ const handleChatMessage = async (socket, io) => {
            io.to(roomName).emit("sendChat", chat, socket.id);
        }
    });
-};
+}; */
 
 const handleListMessages = (socket) => {
    socket.on("listMessages", async (roomName) => {

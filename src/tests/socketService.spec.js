@@ -129,6 +129,23 @@ describe("Socket Integration Tests", () => {
       }
     });
 
+      // tests/socketIntegration.test.js
+  test("it should save and retrieve messages", async (done) => {
+  const roomName = "Agronegócio Global";
+  const messageToSend = "Hello, this is a test message.";
+
+  socket.emit("joinRoom", roomName);
+  socket.emit("chat", messageToSend, roomName);
+
+    // Aguarda um curto período para garantir que a mensagem foi salva
+    setTimeout(async () => {
+      const messages = await Message.find({ room: roomName });
+      expect(messages.length).toBeGreaterThan(0);
+      expect(messages[0].message).toBe(messageToSend);
+      done();
+  }, 100); // Aguarda 100ms
+});
+
     senderSocket.on("connect", () => {
       senderSocket.emit("getUser", {
         user: { name: "user1", socketId: senderSocket.id },
