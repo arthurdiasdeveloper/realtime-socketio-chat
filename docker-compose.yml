@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  mongo_db:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  chat_app:
+    build: .
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongo_db
+    volumes:
+      - .:/usr/src/app
+
+volumes:
+  mongo_data:
